@@ -37,34 +37,78 @@ data <- read.csv(file="https://onlinestatbook.com/case_studies_rvls/physical_str
 
 ```{r}
 plot(SIMS~ARM,data=data)
-model1 =lm(SIMS~ARM, data=data)
-abline(model1)
+model.1 =lm(SIMS~ARM, data=data)
+abline(model.1)
 ```
-        
-
+       
+ The scatterplot shows that simulated strength score increases depending on the amount of arm strength exerted by an individual.     
+          
 ### Numerical results
 
-
+```{r}
+cor(SIMS~ARM,data=data)
+```
+       
+The numerical results shows that the correlation = 0.69 shows that there is a moderate positive correlation between simulated strength scores and arm strength. 
+         
 ### Inferential  (Build model.1)
 
+```{r}
+summary.lm(model.1)
+```
+         
+Model.1 shows that intercept -4.095 and coefficient 0.055 of ARM are both significantly different from 0. 
+        
 #### Predict at target point
-
+      
+```{r}
+targetPoint = data.frame(GRIP=94, ARM=88)
+predictInt = predict(model.1, targetPoint, interval = "prediction")
+print(predictInt)
+```
+         
+At ARM=88, GRIP=94, the predicted SIMS score is 0.71. 95% confidence interval for that score is SIMS between -1.73 and 3.14. 
 
 #### scatterplot with model fit
-  
 
+           
 ## Model 2 SIM~GRIP
 
 ### Now add in scatterplot
-
-
+      
+```{r}
+plot(SIMS~GRIP,data=data)
+model.2 =lm(SIMS~GRIP, data=data)
+abline(model.2)
+```
+         
+The scatterplot shows that simulated strength score increases depending on the amount of GRIP strength exerted by an individual.      
+       
 ### Numerical results 
-
-
+      
+```{r}
+cor(SIMS~GRIP,data=data)
+```
+The numerical results shows that the correlation = 0.64 shows that there is a moderate positive correlation between simulated strength scores and arm strength.        
+                  
 ### Inferential  (Build model.2)
-  
-
+         
+```{r}
+summary.lm(model.2)
+```
+         
+Model.2 shows that intercept -4.809 and coefficient 0.045 of GRIP are both significantly different from 0.          
+          
 #### predict model.2 at target point
+        
+```{r}
+targetPoint = data.frame(GRIP=94, ARM=88)
+predictInt = predict(model.2, targetPoint, interval = "prediction")
+print(predictInt)
+```
+         
+At ARM=88, GRIP=94, the predicted SIMS score is -0.54. 95% confidence interval for that score is SIMS between -3.11 and 2.04.   
+
 
 #### now add the model fit to our plot for model.2
   
@@ -72,15 +116,29 @@ abline(model1)
 
 ## Model 3 SIM~ARM+GRIP
 
-### Numerical results (cor)
+```{r}
+model.3 =lm(SIMS~ARM+GRIP, data=data)
+summary (model.3)
+```
+          
+Model.3 shows that intercept -5.434, coefficient 0.038 of ARM, and coefficient of GRIP 0.025 are all significantly different from 0.  
 
-`
-  
+### Numerical results (cor)
+         
+```{r}
+cor(data)
+```
+This shows the SIMS correlates with GRIP and ARM. 
+         
 ### Inferential  (Build 2-dimentional model.3)
 
 #### predict model.3 at target point
   
-
+```{r}
+predict(model.3, targetPoint, interval = "prediction")
+```
+At ARM=88, GRIP=94, the predicted SIMS score is 0.15. 95% confidence interval for that score is SIMS between -2.14 and 2.44.      
+     
 ## Comparing nested models ANOVA Test
 
 ### Model.1 vs Model.3
@@ -88,3 +146,18 @@ abline(model1)
 
 ## Informally compare Model.1 with model.2
 
+```{r}
+# Compare the two results models using ANOVA
+anova_result <-anova(model.1, model.3)
+print(anova_result)
+```
+       
+The p-value of the comparison of model.1 and model.3 is 0.000004994 which is less than 0.5, this means that the models are different and model.3 is better.
+
+```{r}
+# Compare the two results models using ANOVA
+anova_result <-anova(model.2, model.3)
+print(anova_result)
+```
+    
+The p-value of the comparison of model.2 and model.3 is 0.000000001495 which is less than 0.5, this means that the models are different and model.3 is better.
